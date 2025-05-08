@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <stdlib.h> // para abs
+
+int main() {
+    int i, j;
+    int tamanhoTabuleiro = 10;
+    int valorAgua = 0;
+    int valorNavio = 3;
+    int valorHabilidade = 5;
+
+    // Inicializa o tabuleiro com água
+    int tabuleiro[10][10];
+    for(i = 0; i < tamanhoTabuleiro; i++) {
+        for(j = 0; j < tamanhoTabuleiro; j++) {
+            tabuleiro[i][j] = valorAgua;
+        }
+    }
+
+    // Navios fixos
+    int linhaHorizontal = 1, colunaHorizontal = 2;
+    int linhaVertical = 5, colunaVertical = 7;
+    int linhaHorizontal1 = 4, colunaHorizontal1 = 4;
+    int linhaHorizontal2 = 6, colunaHorizontal2 = 2;
+
+    // Verifica limites e posiciona os navios
+    if(colunaHorizontal + valorNavio <= tamanhoTabuleiro &&
+       linhaVertical + valorNavio <= tamanhoTabuleiro &&
+       linhaHorizontal1 - (valorNavio - 1) >= 0 && colunaHorizontal1 + valorNavio <= tamanhoTabuleiro &&
+       linhaHorizontal2 + valorNavio <= tamanhoTabuleiro && colunaHorizontal2 + valorNavio <= tamanhoTabuleiro) {
+
+        for(i = 0; i < valorNavio; i++) tabuleiro[linhaHorizontal + i][colunaHorizontal] = valorNavio;
+        for(i = 0; i < valorNavio; i++) tabuleiro[linhaVertical][colunaVertical + i] = valorNavio;
+        for(i = 0; i < valorNavio; i++) tabuleiro[linhaHorizontal1 - i][colunaHorizontal1 + i] = valorNavio;
+        for(i = 0; i < valorNavio; i++) tabuleiro[linhaHorizontal2 + i][colunaHorizontal2 + i] = valorNavio;
+
+        // ----- HABILIDADES -----
+        int tamHabilidade = 5; // 5x5
+
+        // Cone
+        int centroConeLinha = 2, centroConeColuna = 4;
+        for(i = 0; i < tamHabilidade; i++) {
+            for(j = 0; j < tamHabilidade; j++) {
+                if(i >= j - tamHabilidade/2 && i >= tamHabilidade/2 - j) {
+                    int l = centroConeLinha + i - tamHabilidade/2;
+                    int c = centroConeColuna + j - tamHabilidade/2;
+                    if(l >= 0 && l < tamanhoTabuleiro && c >= 0 && c < tamanhoTabuleiro && tabuleiro[l][c] == valorAgua)
+                        tabuleiro[l][c] = valorHabilidade;
+                }
+            }
+        }
+
+        // Cruz
+        int centroCruzLinha = 7, centroCruzColuna = 2;
+        for(i = 0; i < tamHabilidade; i++) {
+            int l = centroCruzLinha + i - tamHabilidade/2;
+            int c = centroCruzColuna + i - tamHabilidade/2;
+            if(l >= 0 && l < tamanhoTabuleiro && tabuleiro[l][centroCruzColuna] == valorAgua)
+                tabuleiro[l][centroCruzColuna] = valorHabilidade;
+            if(c >= 0 && c < tamanhoTabuleiro && tabuleiro[centroCruzLinha][c] == valorAgua)
+                tabuleiro[centroCruzLinha][c] = valorHabilidade;
+        }
+
+        // Octaedro
+        int centroOctLinha = 5, centroOctColuna = 5;
+        for(i = 0; i < tamHabilidade; i++) {
+            for(j = 0; j < tamHabilidade; j++) {
+                if(abs(i - tamHabilidade/2) + abs(j - tamHabilidade/2) <= tamHabilidade/2) {
+                    int l = centroOctLinha + i - tamHabilidade/2;
+                    int c = centroOctColuna + j - tamHabilidade/2;
+                    if(l >= 0 && l < tamanhoTabuleiro && c >= 0 && c < tamanhoTabuleiro && tabuleiro[l][c] == valorAgua)
+                        tabuleiro[l][c] = valorHabilidade;
+                }
+            }
+        }
+
+        // Imprime o tabuleiro
+        printf("Tabuleiro:\n");
+        for(i = 0; i < tamanhoTabuleiro; i++) {
+            for(j = 0; j < tamanhoTabuleiro; j++) {
+                if(tabuleiro[i][j] == valorAgua) printf("0 ");
+                else if(tabuleiro[i][j] == valorNavio) printf("3 ");
+                else if(tabuleiro[i][j] == valorHabilidade) printf("5 ");
+            }
+            printf("\n");
+        }
+
+    } else {
+        printf("Navio esta fora do tabuleiro!\n");
+    }
+
+    return 0;
+}
